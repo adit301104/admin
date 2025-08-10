@@ -1,22 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
-
-
-// Order Schema
-const orderSchema = new mongoose.Schema({
-  shoptet_order_id: String,
-  customer_email: { type: String, required: true },
-  product_id: String,
-  amount: { type: Number, required: true },
-  currency: { type: String, default: 'USD' },
-  payment_id: String,
-  status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
-  created_at: { type: Date, default: Date.now },
-  processed_at: Date
-});
-
-const Order = mongoose.model('Order', orderSchema);
+const Order = require('../models/Order');
 
 // POST /api/orders - Process Shoptet order with mock payment
 router.post('/', async (req, res) => {

@@ -1,30 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
+const Order = require('../models/Order');
 const { authenticateToken } = require('./auth');
 
 // Apply authentication middleware to all routes
 router.use(authenticateToken);
 
-// Order Schema (same as in orders.js)
-const orderSchema = new mongoose.Schema({
-  shoptet_order_id: String,
-  customer_email: { type: String, required: true },
-  product_id: String,
-  amount: { type: Number, required: true },
-  currency: { type: String, default: 'USD' },
-  payment_id: String,
-  status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
-  created_at: { type: Date, default: Date.now },
-  processed_at: Date
-});
-
-const Order = mongoose.model('Order', orderSchema);
-
 // GET /api/subscriptions - Get all subscriptions (orders as subscriptions)
 router.get('/', async (req, res) => {
   try {
     const orders = await Order.find().sort({ created_at: -1 });
+    console.log('Found orders:', orders.length);
+    
     const subscriptions = orders.map(order => ({
       id: order._id,
       customer_email: order.customer_email,
@@ -36,6 +23,8 @@ router.get('/', async (req, res) => {
       payment_id: order.payment_id,
       shoptet_order_id: order.shoptet_order_id
     }));
+    
+    console.log('Returning subscriptions:', subscriptions.length);
     res.json({ subscriptions });
   } catch (error) {
     console.error('Subscriptions fetch error:', error);
@@ -49,9 +38,16 @@ router.get('/stats', async (req, res) => {
     const orders = await Order.find();
     const active = orders.filter(o => o.status === 'completed').length;
     const canceled = orders.filter(o => o.status === 'failed').length;
-    const totalRevenue = orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.amount, 0);
+    const pending = orders.filter(o => o.status === 'pending').length;
+    const totalRevenue = orders.reduce((sum, o) => sum + (o.amount || 0), 0);
     
-    res.json({ active, canceled, totalRevenue });
+    res.json({ 
+      active, 
+      canceled, 
+      pending,
+      total: orders.length,
+      totalRevenue: Math.round(totalRevenue * 100) / 100
+    });
   } catch (error) {
     console.error('Stats fetch error:', error);
     res.status(500).json({ error: error.message });

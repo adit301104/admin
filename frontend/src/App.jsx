@@ -9,7 +9,7 @@ import './App.css'
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [subscriptions, setSubscriptions] = useState([])
-  const [stats, setStats] = useState({ active: 0, canceled: 0, totalRevenue: 0 })
+  const [stats, setStats] = useState({ active: 0, canceled: 0, pending: 0, total: 0, totalRevenue: 0 })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -74,6 +74,8 @@ function App() {
       setStats({
         active: 0,
         canceled: 0,
+        pending: 0,
+        total: 0,
         totalRevenue: 0
       })
     }
@@ -105,7 +107,7 @@ function App() {
   const handleLogout = () => {
     setIsAuthenticated(false)
     setSubscriptions([])
-    setStats({ active: 0, canceled: 0, totalRevenue: 0 })
+    setStats({ active: 0, canceled: 0, pending: 0, total: 0, totalRevenue: 0 })
     setLoading(true)
     setError(null)
   }

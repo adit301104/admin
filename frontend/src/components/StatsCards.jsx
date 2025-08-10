@@ -5,19 +5,26 @@ const StatsCards = ({ stats = {} }) => {
   const safeStats = {
     active: Number(stats.active) || 0,
     canceled: Number(stats.canceled) || 0,
+    pending: Number(stats.pending) || 0,
+    total: Number(stats.total) || 0,
     totalRevenue: Number(stats.totalRevenue) || 0
   }
 
   return (
     <div className="stats-container">
       <div className="stat-card">
-        <h3>Active Subscriptions</h3>
+        <h3>Active Orders</h3>
         <p className="stat-number">{safeStats.active}</p>
       </div>
       
       <div className="stat-card">
-        <h3>Canceled Subscriptions</h3>
+        <h3>Failed Orders</h3>
         <p className="stat-number">{safeStats.canceled}</p>
+      </div>
+      
+      <div className="stat-card">
+        <h3>Total Orders</h3>
+        <p className="stat-number">{safeStats.total}</p>
       </div>
       
       <div className="stat-card">
