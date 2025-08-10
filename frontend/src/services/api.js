@@ -97,6 +97,9 @@ class ApiService {
     })
   }
 
+  async getOrders() {
+    return this.request('/api/orders')
+  }
 
 }
 

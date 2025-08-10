@@ -9,6 +9,7 @@ import './App.css'
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [subscriptions, setSubscriptions] = useState([])
+  const [orders, setOrders] = useState([])
   const [stats, setStats] = useState({ active: 0, canceled: 0, totalRevenue: 0 })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -24,9 +25,8 @@ function App() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchSubscriptions()
+      fetchOrders()
       fetchStats()
-      
-
     }
   }, [isAuthenticated])
 
@@ -49,6 +49,16 @@ function App() {
       setSubscriptions([])
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchOrders = async () => {
+    try {
+      const response = await apiService.getOrders()
+      setOrders(response.orders || [])
+    } catch (error) {
+      console.error('Error fetching orders:', error)
+      setOrders([])
     }
   }
 
@@ -114,6 +124,23 @@ function App() {
           loading={loading}
           onCancel={handleCancelSubscription}
         />
+        
+        {orders.length > 0 && (
+          <div style={{ marginTop: '2rem' }}>
+            <h2>Recent Orders from Shoptet</h2>
+            <div style={{ background: 'white', borderRadius: '8px', padding: '1rem', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+              {orders.map(order => (
+                <div key={order._id} style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>
+                  <div><strong>Email:</strong> {order.customer_email}</div>
+                  <div><strong>Amount:</strong> {order.amount} {order.currency}</div>
+                  <div><strong>Status:</strong> {order.status}</div>
+                  <div><strong>Date:</strong> {new Date(order.created_at).toLocaleString()}</div>
+                  {order.shoptet_order_id && <div><strong>Shoptet ID:</strong> {order.shoptet_order_id}</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )
