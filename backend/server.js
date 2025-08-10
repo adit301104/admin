@@ -17,7 +17,9 @@ app.use(cors({
     'http://localhost:3000',
     'http://localhost:5173',
     'https://admin-1-kayg.onrender.com',
-    /\.onrender\.com$/
+    'https://617040.myshoptet.com',
+    /\.onrender\.com$/,
+    /\.myshoptet\.com$/
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
