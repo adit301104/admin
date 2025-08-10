@@ -31,13 +31,11 @@ app.use(express.json());
 const { router: authRouter } = require('./routes/auth');
 const ordersRouter = require('./routes/orders');
 const subscriptionsRouter = require('./routes/subscriptions');
-const webhooksRouter = require('./routes/webhooks');
 
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/subscriptions', subscriptionsRouter);
-app.use('/api/webhooks', webhooksRouter);
 
 // Cron job for recurring billing
 cron.schedule('0 0 * * *', async () => {

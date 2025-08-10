@@ -122,6 +122,25 @@ function App() {
       
       <main>
         <StatsCards stats={stats} />
+        
+        <div style={{ margin: '1rem 0' }}>
+          <button 
+            onClick={async () => {
+              try {
+                const data = await apiService.testData()
+                console.log('Test data:', data)
+                alert(`Found ${data.count} orders in database. Check console for details.`)
+              } catch (error) {
+                console.error('Test failed:', error)
+                alert('Test failed: ' + error.message)
+              }
+            }}
+            style={{ padding: '8px 16px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }}
+          >
+            Test Database Connection
+          </button>
+        </div>
+        
         <SubscriptionTable 
           subscriptions={subscriptions} 
           loading={loading}

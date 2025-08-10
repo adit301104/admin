@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 
-// POST /api/orders - Process Shoptet order with mock payment
+// POST /api/orders - Process order from form
 router.post('/', async (req, res) => {
   try {
-    const { customer_email, product_id, amount, currency, shoptet_order_id } = req.body;
+    const { customer_email, product_id, product_name, amount, currency, interval, shoptet_order_id, source } = req.body;
+    
+    console.log('Received order data:', req.body);
     
     if (!customer_email || !amount) {
       return res.status(400).json({ error: 'Missing required fields: customer_email, amount' });
@@ -16,18 +18,24 @@ router.post('/', async (req, res) => {
       shoptet_order_id,
       customer_email,
       product_id,
+      product_name,
       amount,
-      currency: currency || 'USD',
+      currency: currency || 'EUR',
+      interval,
+      source,
       status: 'pending'
     });
 
     await order.save();
+    console.log('Order saved:', order._id);
 
     // Generate payment ID and mark as completed
     order.payment_id = 'PAY_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     order.status = 'completed';
     order.processed_at = new Date();
     await order.save();
+    
+    console.log('Order completed:', order._id);
 
     res.json({
       success: true,

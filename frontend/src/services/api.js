@@ -103,8 +103,8 @@ class ApiService {
     })
   }
 
-  async getOrders() {
-    return this.request('/api/orders')
+  async testData() {
+    return this.request('/api/subscriptions/test')
   }
 
 }

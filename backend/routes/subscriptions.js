@@ -15,13 +15,15 @@ router.get('/', async (req, res) => {
     const subscriptions = orders.map(order => ({
       id: order._id,
       customer_email: order.customer_email,
-      plan: order.product_id || 'Premium Plan',
+      plan: order.product_name || order.product_id || 'Premium Plan',
       amount: order.amount,
       currency: order.currency,
+      interval: order.interval,
       status: order.status === 'completed' ? 'active' : order.status,
       created_at: order.created_at,
       payment_id: order.payment_id,
-      shoptet_order_id: order.shoptet_order_id
+      shoptet_order_id: order.shoptet_order_id,
+      source: order.source
     }));
     
     console.log('Returning subscriptions:', subscriptions.length);
@@ -62,6 +64,20 @@ router.delete('/:id', async (req, res) => {
     res.json({ success: true, message: 'Subscription deleted successfully' });
   } catch (error) {
     console.error('Delete error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Test endpoint to check raw data
+router.get('/test', async (req, res) => {
+  try {
+    const orders = await Order.find();
+    res.json({ 
+      message: 'Raw data from database',
+      count: orders.length,
+      orders: orders
+    });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
