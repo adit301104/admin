@@ -89,6 +89,12 @@ class ApiService {
     })
   }
 
+  async deleteSubscription(id) {
+    return this.request(`/api/subscriptions/${id}`, {
+      method: 'DELETE'
+    })
+  }
+
   // Order endpoints
   async createOrder(orderData) {
     return this.request('/api/orders', {

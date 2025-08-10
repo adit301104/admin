@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const SubscriptionTable = ({ subscriptions = [], loading, onCancel }) => {
+const SubscriptionTable = ({ subscriptions = [], loading, onCancel, onDelete }) => {
   const [filter, setFilter] = useState('')
 
   // Ensure subscriptions is always an array
@@ -8,7 +8,7 @@ const SubscriptionTable = ({ subscriptions = [], loading, onCancel }) => {
   
   const filteredSubscriptions = safeSubscriptions.filter(sub =>
     sub.customer_email?.toLowerCase().includes(filter.toLowerCase()) ||
-    sub.product_id?.toLowerCase().includes(filter.toLowerCase()) ||
+    sub.plan?.toLowerCase().includes(filter.toLowerCase()) ||
     sub.status?.toLowerCase().includes(filter.toLowerCase())
   )
 
@@ -37,11 +37,11 @@ const SubscriptionTable = ({ subscriptions = [], loading, onCancel }) => {
         <thead>
           <tr>
             <th>Customer Email</th>
-            <th>Product</th>
+            <th>Plan</th>
             <th>Amount</th>
-            <th>Interval</th>
             <th>Status</th>
-            <th>Next Billing</th>
+            <th>Created Date</th>
+            <th>Payment ID</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -49,29 +49,33 @@ const SubscriptionTable = ({ subscriptions = [], loading, onCancel }) => {
           {filteredSubscriptions.map((subscription) => (
             <tr key={subscription.id}>
               <td>{subscription.customer_email}</td>
-              <td>{subscription.product_id}</td>
-              <td>${subscription.amount}</td>
-              <td>{subscription.interval}</td>
+              <td>{subscription.plan}</td>
+              <td>${subscription.amount} {subscription.currency}</td>
               <td>
                 <span className={`status ${subscription.status}`}>
                   {subscription.status}
                 </span>
               </td>
+              <td>{formatDate(subscription.created_at)}</td>
+              <td>{subscription.payment_id || 'N/A'}</td>
               <td>
-                {subscription.next_billing_date 
-                  ? formatDate(subscription.next_billing_date)
-                  : 'N/A'
-                }
-              </td>
-              <td>
-                {subscription.status === 'active' && (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {subscription.status === 'active' && (
+                    <button
+                      onClick={() => onCancel(subscription.id)}
+                      className="cancel-btn"
+                    >
+                      Cancel
+                    </button>
+                  )}
                   <button
-                    onClick={() => onCancel(subscription.id)}
-                    className="cancel-btn"
+                    onClick={() => onDelete(subscription.id)}
+                    className="delete-btn"
+                    style={{ background: '#dc3545', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
                   >
-                    Cancel
+                    Delete
                   </button>
-                )}
+                </div>
               </td>
             </tr>
           ))}
